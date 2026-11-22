@@ -1,6 +1,6 @@
 #pragma once
 #include "Bug.h"
-#include <vector>
+#include "Lasso.h"
 
 constexpr float GAMETIMER = 60.0f;
 constexpr float LASSOLENIENCY = WINDOWSIZE * 0.12;
@@ -43,27 +43,23 @@ private:
 	void populateBugs();
 	void determineCaught();
 
-	//helper/math functions
-	bool pointsWithinRadius(const SDL_FPoint& p1, const SDL_FPoint& p2, const float radius);
-	bool isPointInLasso(const std::vector<SDL_FPoint>& points, const glm::vec2 inPoint);
+	//helper function
 	bool isPointOnScreen(const glm::vec2 inPoint);
-	bool isPointInRect(const SDL_FRect& rect, const glm::vec2& point);
-	
 
 	//Game State
 	GameState gameState = GameState::START;
-	std::vector<Bug> bugs;
+	std::vector<Bug> bugs{};
 	float timer = GAMETIMER;
 	uint32_t score = 0;
+	Lasso lasso;
 
 	//SDL Stuff
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
-	SDL_Event event;
+	SDL_Event event{};
 
 	//input tracking
 	bool mousePressed = false;
-	std::vector<SDL_FPoint> lassoPoints;
 
 	//Background / Menu Sprites
 	StaticSprite bgSprite;

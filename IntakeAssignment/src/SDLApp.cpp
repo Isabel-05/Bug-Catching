@@ -1,4 +1,5 @@
 #include "SDLApp.h"
+#include "Util.h"
 
 SDLApp::SDLApp()
 {
@@ -20,6 +21,8 @@ SDLApp::SDLApp()
 	}
 
 	SDL_SetRenderVSync(renderer, 1);
+
+	lasso.init(renderer);
 
 	//init Background / Menu sprites
 	bgSprite.rect = { 0, 0, WINDOWSIZE, WINDOWSIZE };
@@ -79,11 +82,11 @@ void SDLApp::handleInputStart()
 			float y = event.button.y;
 
 			//start button clicked
-			if (isPointInRect(startSprite.rect, glm::vec2(x, y))) {
+			if (Util::isPointInRect(startSprite.rect, {x, y})) {
 				gameState = GameState::PLAYING;
 			}
 			//exit button clicked
-			else if (isPointInRect(exitSprite.rect, glm::vec2(x, y))) {
+			else if (Util::isPointInRect(exitSprite.rect, {x, y})) {
 				wantQuit = true;
 			}
 		}
@@ -104,10 +107,7 @@ void SDLApp::handleInputPlaying()
 				SDL_FPoint point;
 				point.x = event.motion.x;
 				point.y = event.motion.y;
-				//denoise/reduce the amount of samples
-				if (lassoPoints.empty() || !pointsWithinRadius(point, lassoPoints.back(), 5.0f)) {
-					lassoPoints.push_back(point);
-				}
+				lasso.addPoint(point);
 			}
 		}
 
@@ -118,11 +118,11 @@ void SDLApp::handleInputPlaying()
 		{
 			mousePressed = false;
 
-			if (lassoPoints.size() > 3 && pointsWithinRadius(lassoPoints.at(0), lassoPoints.at(lassoPoints.size() - 1), LASSOLENIENCY)) {
-				determineCaught();
-			}
+			//if (lassoPoints.size() > 3 && pointsWithinRadius(lassoPoints.at(0), lassoPoints.at(lassoPoints.size() - 1), LASSOLENIENCY)) {
+			//	determineCaught();
+			//}
 
-			lassoPoints.clear();
+			lasso.clearPoints();
 		}
 	}
 }
@@ -138,15 +138,15 @@ void SDLApp::handleInputFinished()
 			float x = event.button.x;
 			float y = event.button.y;
 
-			if (isPointInRect(retrySprite.rect, glm::vec2(x, y))) {
+			if (Util::isPointInRect(retrySprite.rect, {x, y})) {
 				timer = GAMETIMER;
 				score = 0;
 				bugs.clear();
-				lassoPoints.clear();
+				lasso.clearPoints();
 				mousePressed = false;
 				gameState = GameState::PLAYING;
 			}
-			else if (isPointInRect(exitSprite.rect, glm::vec2(x, y))) {
+			else if (Util::isPointInRect(exitSprite.rect, {x, y})) {
 				wantQuit = true;
 			}
 		}
@@ -180,11 +180,7 @@ void SDLApp::drawPlaying()
 		bug.renderSprite(renderer);
 	}
 
-	//draw the lasso line
-	const size_t lsize = lassoPoints.size();
-	if (lsize > 1) {
-		SDL_RenderLines(renderer, lassoPoints.data(), lsize);
-	}
+	lasso.drawLasso(renderer);
 
 	//draw score and timer
 	drawText();
@@ -298,7 +294,7 @@ void SDLApp::determineCaught()
 {
 	for (int i = 0; i < static_cast<int>(bugs.size()); i++)
 	{
-		if (isPointInLasso(lassoPoints, bugs.at(i).position))
+		if (lasso.isPointInLasso(bugs.at(i).position))
 		{
 			score += bugs.at(i).pointsAwarded;
 
@@ -306,52 +302,6 @@ void SDLApp::determineCaught()
 			i--;
 		}
 	}
-}
-
-bool SDLApp::isPointInLasso(const std::vector<SDL_FPoint>& points, const glm::vec2 inPoint)
-{
-	//This is my own implementation of the Point-in-Poly algorithm by WR Franklin
-	//Source: https://wrfranklin.org/Research/Short_Notes/pnpoly.html
-
-	bool isInside = false;
-	size_t pointCount = points.size();
-
-	for (size_t i = 0; i < pointCount; i++)
-	{
-		//get next edge
-		SDL_FPoint edgeStart = points.at(i);
-		SDL_FPoint edgeEnd = points.at((i + 1) % pointCount); //modulo so its circular
-
-		//check if inPoint.y is in between the two points y (aka ray intersects the edge)
-		bool edgeCrossesHeight = (edgeStart.y > inPoint.y) != (edgeEnd.y > inPoint.y);
-		if (!edgeCrossesHeight) { continue; }
-
-		//find value between 0 and 1 where the inPoint.y crosses the edge
-		//also this never divides by zero since edgeCrossesHeight has to be true to run into this (which cant be true if theyre equal)
-		float scalingFactor = (inPoint.y - edgeStart.y) / (edgeEnd.y - edgeStart.y);
-		//Find the x position based on that scalar
-		float crossingX = edgeStart.x + scalingFactor * (edgeEnd.x - edgeStart.x);
-
-		//check if the point on the edge is to the right of the inPoint, if so flip the bool
-		//this ensures that if the polygon is drawn next to the bug it hits this an even number of times and returns false
-		//so it essentially only returns true if hits only one edge (aka is inside the polygon)
-		if (inPoint.x < crossingX) {
-			isInside = !isInside;
-		}
-	}
-
-	return isInside;
-}
-
-bool SDLApp::pointsWithinRadius(const SDL_FPoint& p1, const SDL_FPoint& p2, const float radius)
-{
-	//Check if the points are in a specific radius from one another
-
-	float dx = p2.x - p1.x;
-	float dy = p2.y - p1.y;
-	float distSq = dx * dx + dy * dy;
-
-	return distSq <= radius * radius;
 }
 
 bool SDLApp::isPointOnScreen(const glm::vec2 inPoint)
@@ -365,13 +315,5 @@ bool SDLApp::isPointOnScreen(const glm::vec2 inPoint)
 		WINDOWSIZE + despawnMargin * 2
 	};
 
-	return isPointInRect(rect, inPoint);
-}
-
-bool SDLApp::isPointInRect(const SDL_FRect& rect, const glm::vec2& point)
-{
-	return (point.x >= rect.x &&
-		point.x <= rect.x + rect.w &&
-		point.y >= rect.y &&
-		point.y <= rect.y + rect.h);
+	return Util::isPointInRect(rect, {inPoint.x, inPoint.y});
 }

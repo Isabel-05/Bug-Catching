@@ -21,13 +21,17 @@
   <ItemGroup>
     <ClCompile Include="src\Bug.cpp" />
     <ClCompile Include="src\entryPoint.cpp" />
+    <ClCompile Include="src\Lasso.cpp" />
     <ClCompile Include="src\SDLApp.cpp" />
     <ClCompile Include="src\Sprite.cpp" />
+    <ClCompile Include="src\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Bug.h" />
+    <ClInclude Include="src\Lasso.h" />
     <ClInclude Include="src\SDLApp.h" />
     <ClInclude Include="src\Sprite.h" />
+    <ClInclude Include="src\Util.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\README.txt" />
