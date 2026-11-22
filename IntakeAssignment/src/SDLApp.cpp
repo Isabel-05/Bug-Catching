@@ -118,9 +118,8 @@ void SDLApp::handleInputPlaying()
 		{
 			mousePressed = false;
 
-			//if (lassoPoints.size() > 3 && pointsWithinRadius(lassoPoints.at(0), lassoPoints.at(lassoPoints.size() - 1), LASSOLENIENCY)) {
-			//	determineCaught();
-			//}
+			//TODO: better check on wether the lasso is closed
+			determineCaught();
 
 			lasso.clearPoints();
 		}

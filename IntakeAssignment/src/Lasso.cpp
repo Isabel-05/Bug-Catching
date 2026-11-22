@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 
-constexpr float linewidth = 25.0f;
+constexpr float linewidth = 18.0f;
 
 const std::string LINETEXTUREPATH = "./Images/Line.bmp";
 
@@ -44,7 +44,6 @@ void Lasso::drawLasso(SDL_Renderer* renderer)
 
 void Lasso::addPoint(SDL_FPoint& point)
 {
-	//denoise
 	if (lassoPoints.empty())
 	{
 		lassoPoints.push_back(point);
@@ -66,10 +65,31 @@ void Lasso::addPoint(SDL_FPoint& point)
 		
 	SDL_FColor white = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	vertices.push_back({ {p1.x + bl.x, p1.y + bl.y}, white, {0.0f, 0.0f} }); //top left
-	vertices.push_back({ {p1.x - bl.x, p1.y - bl.y}, white, {0.0f, 1.0f} }); //bottom left
-	vertices.push_back({ {p2.x + bl.x, p2.y + bl.y}, white, {1.0f, 0.0f} }); //top right
-	vertices.push_back({ {p2.x - bl.x, p2.y - bl.y}, white, {1.0f, 1.0f} }); //bottom right
+	//vertices.push_back({ {p1.x + bl.x, p1.y + bl.y}, white, {0.0f, 0.0f} }); //top left
+	//vertices.push_back({ {p1.x - bl.x, p1.y - bl.y}, white, {0.0f, 1.0f} }); //bottom left
+	//vertices.push_back({ {p2.x + bl.x, p2.y + bl.y}, white, {1.0f, 0.0f} }); //top right
+	//vertices.push_back({ {p2.x - bl.x, p2.y - bl.y}, white, {1.0f, 1.0f} }); //bottom right
+
+	if (lassoPoints.size() > 1)
+	{
+		SDL_Vertex v1 = vertices.at(vertices.size() - 2);
+		SDL_Vertex v2 = vertices.at(vertices.size() - 1);
+		v1.tex_coord.x = 0.0f;
+		v1.tex_coord.y = 0.0f;
+		v2.tex_coord.x = 0.0f;
+		v2.tex_coord.y = 1.0f;
+		vertices.push_back(v1);
+		vertices.push_back(v2);
+		vertices.push_back({ {p2.x + bl.x, p2.y + bl.y}, white, {1.0f, 0.0f} }); //top right
+		vertices.push_back({ {p2.x - bl.x, p2.y - bl.y}, white, {1.0f, 1.0f} }); //bottom right
+	}
+	else
+	{
+		vertices.push_back({ {p1.x + bl.x, p1.y + bl.y}, white, {0.0f, 0.0f} }); //top left
+		vertices.push_back({ {p1.x - bl.x, p1.y - bl.y}, white, {0.0f, 1.0f} }); //bottom left
+		vertices.push_back({ {p2.x + bl.x, p2.y + bl.y}, white, {1.0f, 0.0f} }); //top right
+		vertices.push_back({ {p2.x - bl.x, p2.y - bl.y}, white, {1.0f, 1.0f} }); //bottom right
+	}
 
 	//triangle 1
 	indices.push_back(vertexCount);
@@ -82,8 +102,6 @@ void Lasso::addPoint(SDL_FPoint& point)
 
 
 	lassoPoints.push_back(point);
-
-	std::cout << vertices.size() << std::endl;
 }
 
 void Lasso::clearPoints()
