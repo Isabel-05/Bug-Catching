@@ -124,10 +124,11 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)IntakeAssignment\external\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL3.lib;SDL3-static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d /e /i "$(ProjectDir)Images" "$(OutDir)Images\"</Command>
+      <Command>xcopy /y /d /e /i "$(ProjectDir)Images" "$(OutDir)Images\"
+xcopy /y /d /e /i "$(ProjectDir)external\lib\x64\SDL3.dll" "$(OutDir)"</Command>
       <Message>Copying Images to output directory</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -147,10 +148,11 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)IntakeAssignment\external\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL3.lib;SDL3-static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d /e /i "$(ProjectDir)Images" "$(OutDir)Images\"</Command>
+      <Command>xcopy /y /d /e /i "$(ProjectDir)Images" "$(OutDir)Images\"
+xcopy /y /d /e /i "$(ProjectDir)external\lib\x64\SDL3.dll" "$(OutDir)"</Command>
       <Message>Copying Images to output directory</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>

@@ -78,9 +78,11 @@ void SDLApp::handleInputStart()
 			float x = event.button.x;
 			float y = event.button.y;
 
+			//start button clicked
 			if (isPointInRect(startSprite.rect, glm::vec2(x, y))) {
 				gameState = GameState::PLAYING;
 			}
+			//exit button clicked
 			else if (isPointInRect(exitSprite.rect, glm::vec2(x, y))) {
 				wantQuit = true;
 			}
@@ -229,7 +231,7 @@ void SDLApp::drawText()
 {
 	std::string scoreText = "Score: " + std::to_string(score);
 
-	//convert float timer into minute/seconds 
+	//convert float timer into minute/seconds
 	int totalSeconds = static_cast<int>(timer);
 	int minute  = static_cast<int>(totalSeconds / 60);
 	int secondsTens = static_cast<int>((totalSeconds % 60) / 10);
@@ -368,13 +370,8 @@ bool SDLApp::isPointOnScreen(const glm::vec2 inPoint)
 
 bool SDLApp::isPointInRect(const SDL_FRect& rect, const glm::vec2& point)
 {
-	if (point.x >= rect.x &&
+	return (point.x >= rect.x &&
 		point.x <= rect.x + rect.w &&
 		point.y >= rect.y &&
-		point.y <= rect.y + rect.h)
-	{
-		return true;
-	}
-	
-	return false;
+		point.y <= rect.y + rect.h);
 }

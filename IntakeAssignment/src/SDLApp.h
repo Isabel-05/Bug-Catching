@@ -2,9 +2,9 @@
 #include "Bug.h"
 #include <vector>
 
-const float GAMETIMER = 60.0f;
-const float LASSOLENIENCY = WINDOWSIZE * 0.12;
-const int MAX_BUGS = 6;
+constexpr float GAMETIMER = 60.0f;
+constexpr float LASSOLENIENCY = WINDOWSIZE * 0.12;
+constexpr int MAX_BUGS = 6;
 
 enum class GameState
 {
