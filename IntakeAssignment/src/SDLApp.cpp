@@ -118,9 +118,10 @@ void SDLApp::handleInputPlaying()
 		{
 			mousePressed = false;
 
-			//TODO: better check on wether the lasso is closed
-			determineCaught();
-
+			if(lasso.isClosed()){
+				determineCaught();
+			}
+			
 			lasso.clearPoints();
 		}
 	}
@@ -310,8 +311,8 @@ bool SDLApp::isPointOnScreen(const glm::vec2 inPoint)
 	SDL_FRect rect{
 		-despawnMargin,
 		-despawnMargin,
-		WINDOWSIZE + despawnMargin * 2,
-		WINDOWSIZE + despawnMargin * 2
+		WINDOWSIZE + (despawnMargin * 2),
+		WINDOWSIZE + (despawnMargin * 2)
 	};
 
 	return Util::isPointInRect(rect, {inPoint.x, inPoint.y});

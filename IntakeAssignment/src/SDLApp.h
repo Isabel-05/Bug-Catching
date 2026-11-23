@@ -3,7 +3,7 @@
 #include "Lasso.h"
 
 constexpr float GAMETIMER = 60.0f;
-constexpr float LASSOLENIENCY = WINDOWSIZE * 0.12;
+
 constexpr int MAX_BUGS = 6;
 
 enum class GameState

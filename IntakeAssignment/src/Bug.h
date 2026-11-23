@@ -4,11 +4,11 @@
 #include <glm/vec2.hpp>
 
 //feel free to change to a resolution you find comfortable
-const int WINDOWSIZE = 1080;
+constexpr int WINDOWSIZE = 1080;
+constexpr float SCALEDIFF = WINDOWSIZE / 1080.0f; //used to scale the game for different resolutions
 
-//scaled proportionally for other resolutions
-const float SPRITESIZE = 64 * (WINDOWSIZE / 1080.0f); 
-const float SPAWNMARGIN = 40 * (WINDOWSIZE / 1080.0f);
+const float SPRITESIZE = 64 * SCALEDIFF; 
+const float SPAWNMARGIN = 40 * SCALEDIFF;
 
 enum class BugType
 {
@@ -43,10 +43,12 @@ struct Bug
 private:
 
 	void resetTimer();
+	void computeAngle();
 
 	Sprite sprite;
 	glm::vec2 forward{0, 0};
 	int lifeTime = 5; //the number of direction changes before the bug leaves the screen
 	float movementSpeed = 0.0f;
 	float changeDirTimer = 0.0f;
+	double angle = 0.0;
 };

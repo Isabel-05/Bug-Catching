@@ -12,6 +12,7 @@ public:
 	void init(SDL_Renderer* renderer);
 
 	bool isPointInLasso(const glm::vec2 inPoint);
+	bool isClosed();
 	void drawLasso(SDL_Renderer* renderer);
 
 	void addPoint(SDL_FPoint& point);

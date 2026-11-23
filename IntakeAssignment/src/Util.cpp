@@ -18,4 +18,10 @@ namespace Util
 			point.y >= rect.y &&
 			point.y <= rect.y + rect.h);
 	}
+
+	//algorithm source: https://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/ 
+	bool ccw(const SDL_FPoint& a, const SDL_FPoint& b, const SDL_FPoint& c)
+	{
+		return (c.y - a.y) * (b.x - a.x) > (b.y - a.y) * (c.x - a.x);
+	}
 }

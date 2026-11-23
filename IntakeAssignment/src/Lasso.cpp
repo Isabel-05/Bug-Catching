@@ -4,8 +4,10 @@
 #include <iostream>
 
 constexpr float linewidth = 18.0f;
+constexpr float LASSOLENIENCY = 125.0f;
 
 const std::string LINETEXTUREPATH = "./Images/Line.bmp";
+
 
 void Lasso::init(SDL_Renderer* renderer)
 {
@@ -62,13 +64,8 @@ void Lasso::addPoint(SDL_FPoint& point)
 
 	glm::vec2 direction = p1 - p2;
 	glm::vec2 bl = glm::normalize(direction * rotation) * linewidth;
-		
+	
 	SDL_FColor white = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-	//vertices.push_back({ {p1.x + bl.x, p1.y + bl.y}, white, {0.0f, 0.0f} }); //top left
-	//vertices.push_back({ {p1.x - bl.x, p1.y - bl.y}, white, {0.0f, 1.0f} }); //bottom left
-	//vertices.push_back({ {p2.x + bl.x, p2.y + bl.y}, white, {1.0f, 0.0f} }); //top right
-	//vertices.push_back({ {p2.x - bl.x, p2.y - bl.y}, white, {1.0f, 1.0f} }); //bottom right
 
 	if (lassoPoints.size() > 1)
 	{
@@ -148,4 +145,38 @@ bool Lasso::isPointInLasso(const glm::vec2 inPoint)
 	}
 
 	return isInside;
+}
+
+bool Lasso::isClosed()
+{
+	if (lassoPoints.size() < 3) { return false; }
+
+	//if the the first and last point are within a certain radius of each other, the lasso counts as closed
+	bool closeEnough = Util::pointsWithinRadius(lassoPoints.front(), lassoPoints.back(), LASSOLENIENCY);
+	if(closeEnough) { return true; }
+
+	//if the to points don't, the line might have crossed itself which also counts as closed
+	//algorithm source: https://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/ 
+
+	bool intersects = false;
+	size_t len = lassoPoints.size();
+
+	//pincer style loop since the intersection usually happens near the far ends
+	//a small optimization for this brute force, but the amount of sample points is denoised so it shouldnt be too bad
+	for (size_t i = 0; i < len; i++)
+	{
+		SDL_FPoint a1 = lassoPoints.at(i);
+		SDL_FPoint a2 = lassoPoints.at((i + 1) % len);
+
+		for (size_t j = len - 1; j > i; j--)
+		{
+			SDL_FPoint b1 = lassoPoints.at(j);
+			SDL_FPoint b2 = lassoPoints.at(j - 1);
+			intersects = Util::ccw(a1, b1, b2) != Util::ccw(a2, b1, b2) &&
+				Util::ccw(a1, a2, b1) != Util::ccw(a1, a2, b2);
+		}
+		if (intersects) { break; }
+	}
+
+	return intersects;
 }

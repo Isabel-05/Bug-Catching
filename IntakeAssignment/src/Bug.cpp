@@ -15,32 +15,30 @@ void Bug::init(SDL_Renderer* renderer, BugType inType, glm::vec2 inPosition, glm
 	forward = inForward;
 	bugType = inType;
 
-	//1080 is the resolution i balanced the movement speed around so im scaling it proportionally so its the same on other resolutions
-	float wScalar = WINDOWSIZE / 1080.0f;
-
 	switch (inType)
 	{
 	case BugType::LADYBUG:
 		sprite.init(renderer, LADYBUGPATH);
-		movementSpeed = 180 * wScalar;
+		movementSpeed = 180 * SCALEDIFF;
 		lifeTime = 2;
 		pointsAwarded = 1;
 		break;
 	case BugType::MOTH:
 		sprite.init(renderer, MOTHPATH);
-		movementSpeed = 300 * wScalar;
+		movementSpeed = 300 * SCALEDIFF;
 		lifeTime = 4;
 		pointsAwarded = 2;
 		break;
 	case BugType::BUTTERFLY:
 		sprite.init(renderer, BUTTERFLYPATH);
-		movementSpeed = 400 * wScalar;
+		movementSpeed = 400 * SCALEDIFF;
 		lifeTime = 5;
 		pointsAwarded = 3;
 		break;
 	}
 
 	resetTimer();
+	computeAngle();
 }
 
 void Bug::initRandom(SDL_Renderer* renderer)
@@ -99,11 +97,14 @@ void Bug::update(float deltaTime)
 	{
 		std::uniform_int_distribution<int> genPos(0, WINDOWSIZE);
 
+		//once timer runs out, pick a new random direction and reset the timer
 		forward = glm::normalize(glm::vec2(genPos(generator), genPos(generator)) - position);
+		computeAngle();
 		resetTimer();
-		lifeTime-- ;
+		lifeTime-- ; //decrement lifetime so it eventually leaves the screen
 	}
 	
+	//move the bug along its forward vector (framerate independent)
 	position.x += movementSpeed * forward.x * deltaTime;
 	position.y += movementSpeed * forward.y * deltaTime;
 }
@@ -121,12 +122,6 @@ void Bug::renderSprite(SDL_Renderer* renderer)
 		sprite.renderRotated(renderer, rect, 0.0, forward.x < 0);
 		return;
 	}
-
-	//the ladybug and moth sprite face directly up
-	//that means i cant just get the angle; since atan goes from (1,0) counter clockwise
-	//i add 90 degrees to line it up with the sprites
-	double angle = std::atan2(forward.y, forward.x);
-	angle =  angle * (180.0 / 3.14159265358979) + 90; //convert to degrees and add offset
 
 	sprite.renderRotated(renderer, rect, angle, false);
 }
@@ -146,4 +141,12 @@ void Bug::resetTimer()
 		std::uniform_real_distribution<float> genTimer(0.2f, 0.7f);
 		changeDirTimer = genTimer(generator);
 	}
+}
+
+void Bug::computeAngle()
+{
+	//the ladybug and moth sprite face directly up
+	//that means i cant just get the angle; since atan goes from (1,0) counter clockwise
+	//i add 90 degrees to line it up with the sprites
+	angle =  std::atan2(forward.y, forward.x) * (180.0 / 3.14159265358979) + 90;
 }
