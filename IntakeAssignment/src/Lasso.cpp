@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 
-constexpr float linewidth = 20.0f;
+constexpr float linewidth = 10.0f;
 constexpr float LASSOLENIENCY = 165.0f;
 
 const std::string LINETEXTUREPATH = "./Images/Line.bmp";
@@ -69,17 +69,17 @@ void Lasso::addPoint(SDL_FPoint& point)
 
 	if (lassoPoints.size() > 2)
 	{
+		//shift the previous quads UVs back into tiling
 		vertices.at(vertices.size() - 1).tex_coord.x = 0.4f;
 		vertices.at(vertices.size() - 2).tex_coord.x = 0.4f;
 		vertices.at(vertices.size() - 3).tex_coord.x = 1.0f;
 		vertices.at(vertices.size() - 4).tex_coord.x = 1.0f;
 
+		//make new quad with UVs on the rounded side
 		SDL_Vertex v1 = vertices.at(vertices.size() - 2);
 		SDL_Vertex v2 = vertices.at(vertices.size() - 1);
 		v1.tex_coord.x = 0.2f;
-		v1.tex_coord.y = 0.0f;
 		v2.tex_coord.x = 0.2f;
-		v2.tex_coord.y = 1.0f;
 		vertices.push_back(v1);
 		vertices.push_back(v2);
 		vertices.push_back({ {p2.x + perpVec.x, p2.y + perpVec.y}, white, {0.0f, 0.0f} }); //top right
