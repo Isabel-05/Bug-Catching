@@ -10,7 +10,8 @@ enum class GameState
 {
 	START,
 	PLAYING,
-	FINISHED
+	FINISHED,
+	PAUSED
 };
 
 
@@ -30,11 +31,13 @@ private:
 	void handleInputStart();
 	void handleInputPlaying();
 	void handleInputFinished();
+	void handleInputPaused();
 
 	//draw functions
 	void drawStart();
 	void drawPlaying();
 	void drawFinished();
+	void drawPaused();
 	void drawTimerAndScore();
 
 	//game related functions
@@ -66,5 +69,6 @@ private:
 	StaticSprite startSprite;
 	StaticSprite retrySprite;
 	StaticSprite exitSprite;
+	StaticSprite continueSprite;
 };
 

@@ -7,7 +7,7 @@ Sprite::~Sprite()
 
 //during move construction, the original object is about to be destroyed meaning a shallow copy would just give
 //the new object a raw gpu pointer thats about to be freed from the SDL_DestroyTexture call in the destructor of the original obj
-//so i move over the pointer to the new obj and then assign the obj thats about to be destroyed nullptr so it cant free it. Equals no dangling pointer
+//so i move over the pointer to the new obj and then assign the obj thats about to be destroyed nullptr so it cant free it.
 Sprite::Sprite(Sprite&& other) noexcept
 {
 	texture = other.texture;
@@ -58,7 +58,7 @@ void Sprite::renderRotated(SDL_Renderer* renderer, const SDL_FRect& inRect, cons
 {
 	if (!texture) { return; }
 
-	SDL_FPoint center = { inRect.w / 2, inRect.h / 2 };
+	SDL_FPoint center = { inRect.w * 0.5, inRect.h * 0.5 };
 	SDL_FlipMode flipmode = flip ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
 
 	SDL_RenderTextureRotated(renderer, texture, nullptr, &inRect, angle, &center, flipmode);

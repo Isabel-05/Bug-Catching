@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 
-float linewidth = 10.0f;
+float LINEWIDTH = 10.0f;
 float LASSOLENIENCY = 180.0f;
 
 const std::string LINETEXTUREPATH = "./Images/Line.bmp";
@@ -30,7 +30,7 @@ void Lasso::init(SDL_Renderer* renderer, float scalar)
 	SDL_DestroySurface(imageSf);
 
 	LASSOLENIENCY *= scalar;
-	linewidth *= scalar;
+	LINEWIDTH *= scalar;
 }
 
 Lasso::~Lasso()
@@ -66,7 +66,7 @@ void Lasso::addPoint(SDL_FPoint& point)
 	glm::mat2 rotation{ 0, -1, 1, 0 };
 
 	glm::vec2 direction = p1 - p2;
-	glm::vec2 perpVec = glm::normalize(direction * rotation) * linewidth;
+	glm::vec2 perpVec = glm::normalize(direction * rotation) * LINEWIDTH;
 	
 	SDL_FColor white = { 1.0f, 1.0f, 1.0f, 1.0f };
 
@@ -93,8 +93,8 @@ void Lasso::addPoint(SDL_FPoint& point)
 		//first quad needs four calculations + modified UVs so it samples the rounded part of the texture
 		vertices.push_back({ {p1.x + perpVec.x, p1.y + perpVec.y}, white, {0.0f, 0.0f} }); //top left
 		vertices.push_back({ {p1.x - perpVec.x, p1.y - perpVec.y}, white, {0.0f, 1.0f} }); //bottom left
-		vertices.push_back({ {p2.x + perpVec.x, p2.y + perpVec.y}, white, {0.27f, 0.0f} }); //top right
-		vertices.push_back({ {p2.x - perpVec.x, p2.y - perpVec.y}, white, {0.27f, 1.0f} }); //bottom right
+		vertices.push_back({ {p2.x + perpVec.x, p2.y + perpVec.y}, white, {0.3f, 0.0f} }); //top right
+		vertices.push_back({ {p2.x - perpVec.x, p2.y - perpVec.y}, white, {0.3f, 1.0f} }); //bottom right
 	}
 
 	//triangle 1

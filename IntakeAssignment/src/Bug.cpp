@@ -97,14 +97,14 @@ void Bug::update(float deltaTime)
 	{
 		std::uniform_int_distribution<int> genPos(0, WINDOWSIZE);
 
-		//once timer runs out, pick a new random direction and reset the timer
+		//once timer runs out, pick a new random direction, compute the sprite angle and reset the timer
 		forward = glm::normalize(glm::vec2(genPos(generator), genPos(generator)) - position);
 		computeAngle();
 		resetTimer();
 		lifeTime-- ; //decrement lifetime so it eventually leaves the screen
 	}
 	
-	//move the bug along its forward vector (framerate independent)
+	//move the bug along its forward vector 
 	position.x += movementSpeed * forward.x * deltaTime;
 	position.y += movementSpeed * forward.y * deltaTime;
 }
@@ -119,6 +119,7 @@ void Bug::renderSprite(SDL_Renderer* renderer)
 
 	if (bugType == BugType::BUTTERFLY)
 	{
+		//the butterfly sprite stays locked horizontally since it looked a bit weird rotated
 		sprite.renderRotated(renderer, rect, 0.0, forward.x < 0);
 		return;
 	}

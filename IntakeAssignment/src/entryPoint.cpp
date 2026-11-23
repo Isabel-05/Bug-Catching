@@ -8,7 +8,7 @@ int main()
 	while (!myApp.wantQuit)
 	{
 		Uint64 now = SDL_GetPerformanceCounter();
-		float deltaTime = (float)(now - lastTime) / (float) SDL_GetPerformanceFrequency();
+		float deltaTime = static_cast<float>(now - lastTime) / static_cast<float>(SDL_GetPerformanceFrequency());
 		lastTime = now;
 
 		myApp.update(deltaTime);

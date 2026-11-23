@@ -32,11 +32,16 @@ SDLApp::SDLApp()
 	float quarterScreen = WINDOWSIZE * 0.25;
 	float threeEighths = WINDOWSIZE * 0.375;
 
-	startSprite.rect = { quarterScreen, threeEighths, midScreen, quarterScreen};
+	SDL_FRect middleRect{ quarterScreen, threeEighths, midScreen, quarterScreen };
+
+	startSprite.rect = middleRect;
 	startSprite.sprite.init(renderer, "./Images/start_box.bmp");
 
-	retrySprite.rect = { quarterScreen, threeEighths, midScreen, quarterScreen };
+	retrySprite.rect = middleRect;
 	retrySprite.sprite.init(renderer, "./Images/retry_box.bmp");
+
+	continueSprite.rect = middleRect;
+	continueSprite.sprite.init(renderer, "./Images/continue_box.bmp");
 
 	exitSprite.rect = { threeEighths, midScreen + (midScreen / 3), quarterScreen, quarterScreen * 0.5f };
 	exitSprite.sprite.init(renderer, "./Images/exit_box.bmp");
@@ -65,6 +70,10 @@ void SDLApp::update(float deltaTime)
 	case GameState::FINISHED:
 		handleInputFinished();
 		drawFinished();
+		break;
+	case GameState::PAUSED:
+		handleInputPaused();
+		drawPaused();
 		break;
 	}
 }
@@ -126,6 +135,10 @@ void SDLApp::handleInputPlaying()
 			
 			lasso.clearPoints();
 		}
+
+		if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_ESCAPE) {
+			gameState = GameState::PAUSED;
+		}
 	}
 }
 
@@ -149,6 +162,27 @@ void SDLApp::handleInputFinished()
 				gameState = GameState::PLAYING;
 			}
 			else if (Util::isPointInRect(exitSprite.rect, {x, y})) {
+				wantQuit = true;
+			}
+		}
+	}
+}
+
+void SDLApp::handleInputPaused()
+{
+	while (SDL_PollEvent(&event))
+	{
+		if (event.type == SDL_EVENT_QUIT) { wantQuit = true; }
+
+		if (event.type == SDL_EVENT_MOUSE_BUTTON_UP) {
+
+			float x = event.button.x;
+			float y = event.button.y;
+
+			if (Util::isPointInRect(retrySprite.rect, { x, y })) {
+				gameState = GameState::PLAYING;
+			}
+			else if (Util::isPointInRect(exitSprite.rect, { x, y })) {
 				wantQuit = true;
 			}
 		}
@@ -224,6 +258,19 @@ void SDLApp::drawFinished()
 	SDL_RenderPresent(renderer);
 }
 
+void SDLApp::drawPaused()
+{
+	SDL_RenderClear(renderer);
+
+	bgSprite.sprite.render(renderer, bgSprite.rect);
+	continueSprite.sprite.render(renderer, retrySprite.rect);
+	exitSprite.sprite.render(renderer, exitSprite.rect);
+
+	drawTimerAndScore();
+
+	SDL_RenderPresent(renderer);
+}
+
 
 void SDLApp::drawTimerAndScore()
 {
@@ -235,6 +282,7 @@ void SDLApp::drawTimerAndScore()
 	int secondsTens = static_cast<int>((totalSeconds % 60) / 10);
 	int secondsOnes = totalSeconds % 10;
 	std::string timerText = std::to_string(minute) + ":" + std::to_string(secondsTens) + std::to_string(secondsOnes);
+	//i split up the two digits so it renders single seconds as "1:04" instead of "1:4" (for example)
 
 	const float scale = WINDOWSIZE * 0.005;
 	const float charWidth = 8.0f * scale;
