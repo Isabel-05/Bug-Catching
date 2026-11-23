@@ -15,7 +15,7 @@ public:
 	bool isClosed();
 	void drawLasso(SDL_Renderer* renderer);
 
-	void addPoint(SDL_FPoint& point);
+	void addPoint(const SDL_FPoint& point);
 	void clearPoints();
 
 private:

@@ -137,6 +137,8 @@ void SDLApp::handleInputPlaying()
 		}
 
 		if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_ESCAPE) {
+			lasso.clearPoints();
+			mousePressed = false;
 			gameState = GameState::PAUSED;
 		}
 	}

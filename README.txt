@@ -29,7 +29,7 @@ That means it's better to draw small circles with intent around high value bugs.
 
 Try to get as many points as possible within the 60 seconds!
 Your final score will be shown at the end and you can try again by clicking "Retry" 
-You can pause the game by clicking the escape key
+You can pause the game by pressing the escape key
 
 
 About Window Resolution:

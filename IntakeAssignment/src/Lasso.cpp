@@ -40,14 +40,14 @@ Lasso::~Lasso()
 
 void Lasso::drawLasso(SDL_Renderer* renderer)
 {
-	if (!lineTexture || vertices.size() < 0) { return; }
+	if (!lineTexture || vertices.size() == 0) { return; }
 
 	SDL_RenderGeometry(renderer, lineTexture,
 		vertices.data(), static_cast<int>(vertices.size()),
 		indices.data(), static_cast<int>(indices.size()));
 }
 
-void Lasso::addPoint(SDL_FPoint& point)
+void Lasso::addPoint(const SDL_FPoint& point)
 {
 	if (lassoPoints.empty())
 	{

@@ -45,7 +45,7 @@ void Bug::initRandom(SDL_Renderer* renderer)
 {
 	std::uniform_int_distribution<int> genPos(1, WINDOWSIZE); //1 to prevent glm::normalize(0,0)
 	std::uniform_int_distribution<int> genSign(0, 1);
-	std::uniform_int_distribution<int> genType(0, 6);
+	std::uniform_int_distribution<int> genType(0, 8);
 
 	//random spawn position on one of the edges (off screen)
 	glm::vec2 randPos;
@@ -72,14 +72,14 @@ void Bug::initRandom(SDL_Renderer* renderer)
 	glm::vec2 randForward = glm::normalize(glm::vec2(genPos(generator), genPos(generator)) - randPos);
 
 	//Random Type
-	//Type chances roughly (ladybug: 57%, moth: 29%, Butterfly: 14%)
+	//Type chances ladybug: 50%, moth: 30%, Butterfly: 20%
 	BugType randType = BugType::LADYBUG;
 	int codedType = genType(generator);
 
-	if (codedType <= 3) {
+	if (codedType <= 4) {
 		randType = BugType::LADYBUG;
 	}
-	else if (codedType <= 5) {
+	else if (codedType <= 7) {
 		randType = BugType::MOTH;
 	}
 	else {
