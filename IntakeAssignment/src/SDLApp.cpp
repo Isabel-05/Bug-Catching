@@ -28,15 +28,17 @@ SDLApp::SDLApp()
 	bgSprite.rect = { 0, 0, WINDOWSIZE, WINDOWSIZE };
 	bgSprite.sprite.init(renderer, "./Images/Grass.bmp");
 
-	float midScreen = WINDOWSIZE / 2;
+	float midScreen = WINDOWSIZE * 0.5;
+	float quarterScreen = WINDOWSIZE * 0.25;
+	float threeEighths = WINDOWSIZE * 0.375;
 
-	startSprite.rect = { midScreen - (midScreen / 2), midScreen - (midScreen / 4), WINDOWSIZE / 2, WINDOWSIZE / 4};
+	startSprite.rect = { quarterScreen, threeEighths, midScreen, quarterScreen};
 	startSprite.sprite.init(renderer, "./Images/start_box.bmp");
 
-	retrySprite.rect = { midScreen - (midScreen / 2), midScreen - (midScreen / 4), WINDOWSIZE / 2, WINDOWSIZE / 4 };
+	retrySprite.rect = { quarterScreen, threeEighths, midScreen, quarterScreen };
 	retrySprite.sprite.init(renderer, "./Images/retry_box.bmp");
 
-	exitSprite.rect = { midScreen - (midScreen / 4), midScreen + (midScreen / 3), WINDOWSIZE / 4, WINDOWSIZE / 8 };
+	exitSprite.rect = { threeEighths, midScreen + (midScreen / 3), quarterScreen, quarterScreen * 0.5f };
 	exitSprite.sprite.init(renderer, "./Images/exit_box.bmp");
 }
 
@@ -183,7 +185,7 @@ void SDLApp::drawPlaying()
 	lasso.drawLasso(renderer);
 
 	//draw score and timer
-	drawText();
+	drawTimerAndScore();
 	
 	SDL_RenderPresent(renderer);
 }
@@ -223,7 +225,7 @@ void SDLApp::drawFinished()
 }
 
 
-void SDLApp::drawText()
+void SDLApp::drawTimerAndScore()
 {
 	std::string scoreText = "Score: " + std::to_string(score);
 

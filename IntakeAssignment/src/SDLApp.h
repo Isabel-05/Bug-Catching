@@ -35,7 +35,7 @@ private:
 	void drawStart();
 	void drawPlaying();
 	void drawFinished();
-	void drawText();
+	void drawTimerAndScore();
 
 	//game related functions
 	void updateGameState(float deltaTime);

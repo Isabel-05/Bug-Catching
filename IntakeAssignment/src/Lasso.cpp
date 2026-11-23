@@ -3,8 +3,8 @@
 #include <string>
 #include <iostream>
 
-constexpr float linewidth = 18.0f;
-constexpr float LASSOLENIENCY = 125.0f;
+constexpr float linewidth = 20.0f;
+constexpr float LASSOLENIENCY = 165.0f;
 
 const std::string LINETEXTUREPATH = "./Images/Line.bmp";
 
@@ -63,29 +63,35 @@ void Lasso::addPoint(SDL_FPoint& point)
 	glm::mat2 rotation{ 0, -1, 1, 0 };
 
 	glm::vec2 direction = p1 - p2;
-	glm::vec2 bl = glm::normalize(direction * rotation) * linewidth;
+	glm::vec2 perpVec = glm::normalize(direction * rotation) * linewidth;
 	
 	SDL_FColor white = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	if (lassoPoints.size() > 1)
+	if (lassoPoints.size() > 2)
 	{
+		vertices.at(vertices.size() - 1).tex_coord.x = 0.4f;
+		vertices.at(vertices.size() - 2).tex_coord.x = 0.4f;
+		vertices.at(vertices.size() - 3).tex_coord.x = 1.0f;
+		vertices.at(vertices.size() - 4).tex_coord.x = 1.0f;
+
 		SDL_Vertex v1 = vertices.at(vertices.size() - 2);
 		SDL_Vertex v2 = vertices.at(vertices.size() - 1);
-		v1.tex_coord.x = 0.0f;
+		v1.tex_coord.x = 0.2f;
 		v1.tex_coord.y = 0.0f;
-		v2.tex_coord.x = 0.0f;
+		v2.tex_coord.x = 0.2f;
 		v2.tex_coord.y = 1.0f;
 		vertices.push_back(v1);
 		vertices.push_back(v2);
-		vertices.push_back({ {p2.x + bl.x, p2.y + bl.y}, white, {1.0f, 0.0f} }); //top right
-		vertices.push_back({ {p2.x - bl.x, p2.y - bl.y}, white, {1.0f, 1.0f} }); //bottom right
+		vertices.push_back({ {p2.x + perpVec.x, p2.y + perpVec.y}, white, {0.0f, 0.0f} }); //top right
+		vertices.push_back({ {p2.x - perpVec.x, p2.y - perpVec.y}, white, {0.0f, 1.0f} }); //bottom right
 	}
 	else
 	{
-		vertices.push_back({ {p1.x + bl.x, p1.y + bl.y}, white, {0.0f, 0.0f} }); //top left
-		vertices.push_back({ {p1.x - bl.x, p1.y - bl.y}, white, {0.0f, 1.0f} }); //bottom left
-		vertices.push_back({ {p2.x + bl.x, p2.y + bl.y}, white, {1.0f, 0.0f} }); //top right
-		vertices.push_back({ {p2.x - bl.x, p2.y - bl.y}, white, {1.0f, 1.0f} }); //bottom right
+		//first quad needs four calculations + modified UVs so it samples the rounded part of the texture
+		vertices.push_back({ {p1.x + perpVec.x, p1.y + perpVec.y}, white, {0.0f, 0.0f} }); //top left
+		vertices.push_back({ {p1.x - perpVec.x, p1.y - perpVec.y}, white, {0.0f, 1.0f} }); //bottom left
+		vertices.push_back({ {p2.x + perpVec.x, p2.y + perpVec.y}, white, {0.27f, 0.0f} }); //top right
+		vertices.push_back({ {p2.x - perpVec.x, p2.y - perpVec.y}, white, {0.27f, 1.0f} }); //bottom right
 	}
 
 	//triangle 1
@@ -158,7 +164,6 @@ bool Lasso::isClosed()
 	//if the to points don't, the line might have crossed itself which also counts as closed
 	//algorithm source: https://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/ 
 
-	bool intersects = false;
 	size_t len = lassoPoints.size();
 
 	//pincer style loop since the intersection usually happens near the far ends
@@ -172,11 +177,14 @@ bool Lasso::isClosed()
 		{
 			SDL_FPoint b1 = lassoPoints.at(j);
 			SDL_FPoint b2 = lassoPoints.at(j - 1);
-			intersects = Util::ccw(a1, b1, b2) != Util::ccw(a2, b1, b2) &&
-				Util::ccw(a1, a2, b1) != Util::ccw(a1, a2, b2);
+			bool intersects = (Util::ccw(a1, b1, b2) != Util::ccw(a2, b1, b2)) &&
+				(Util::ccw(a1, a2, b1) != Util::ccw(a1, a2, b2));
+
+			if (intersects) {
+				return true; 
+			}
 		}
-		if (intersects) { break; }
 	}
 
-	return intersects;
+	return false;
 }
