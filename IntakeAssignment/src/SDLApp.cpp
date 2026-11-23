@@ -342,16 +342,20 @@ void SDLApp::updateBugs(float deltaTime)
 
 void SDLApp::determineCaught()
 {
+	int count = 0;
+
 	for (int i = 0; i < static_cast<int>(bugs.size()); i++)
 	{
 		if (lasso.isPointInLasso(bugs.at(i).position))
 		{
-			score += bugs.at(i).pointsAwarded;
-
+			count += bugs.at(i).pointsAwarded;
+			
 			bugs.erase(bugs.begin() + i);
 			i--;
 		}
 	}
+	//lasso can only give a max of 3 points
+	score += glm::min(count, 3);
 }
 
 bool SDLApp::isPointOnScreen(const glm::vec2 inPoint)

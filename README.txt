@@ -24,8 +24,12 @@ Because of that they also have different spawn rates and give different amounts 
 - Moth = 2 points
 - Butterfly = 3 points
 
+But drawing full-screen lassos isn't optimal. A lasso can only award a maximum of 3 points.
+That means it's better to draw small circles with intent around high value bugs.
+
 Try to get as many points as possible within the 60 seconds!
 Your final score will be shown at the end and you can try again by clicking "Retry" 
+You can pause the game by clicking the escape key
 
 
 About Window Resolution:
