@@ -22,7 +22,7 @@ SDLApp::SDLApp()
 
 	SDL_SetRenderVSync(renderer, 1);
 
-	lasso.init(renderer);
+	lasso.init(renderer, SCALEDIFF);
 
 	//init Background / Menu sprites
 	bgSprite.rect = { 0, 0, WINDOWSIZE, WINDOWSIZE };

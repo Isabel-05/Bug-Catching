@@ -5,7 +5,7 @@ how to play / rules:
 When you open the game a start-menu with a "Start" and "Exit" button will appear.
 Once you click "Start", bugs will start spawning and moving across the screen.
 There is a 60 second timer at the top that will start counting down to 0.
-By holding down the left mouse button and moving the mouse you can draw a lasso around the bugs (the lasso needs to roughly connect back where it started to count).
+By holding down the left mouse button and moving the mouse you can draw a lasso around the bugs (the lasso needs to roughly connect back where it started or intersect to count).
 If a bug is detected inside of the lasso, it will be despawned and you will gain points which you can track with the score counter at the top right of the screen.
 No keyboard inputs are needed.
 
@@ -37,6 +37,7 @@ External Resources:
 - SDL3 library
 - GLM library
 - Sprite pack from itch.io: https://deirkart.itch.io/pixel-universe-bugs
-- WR Franklin: Point-in-Poly algorithm
+- WR Franklin: Point-in-Poly algorithm https://wrfranklin.org/Research/Short_Notes/pnpoly.html
+- line intersection algorithm by bryce boe: https://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/ 
 - Mike Shaw: SDL3 Tutorial playlist https://www.youtube.com/playlist?list=PLvv0ScY6vfd-RZSmGbLkZvkgec6lJ0BfX
   (used for learning the window & renderer creation, input handling and sprite rendering)

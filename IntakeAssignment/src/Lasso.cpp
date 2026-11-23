@@ -3,13 +3,13 @@
 #include <string>
 #include <iostream>
 
-constexpr float linewidth = 10.0f;
-constexpr float LASSOLENIENCY = 165.0f;
+float linewidth = 10.0f;
+float LASSOLENIENCY = 180.0f;
 
 const std::string LINETEXTUREPATH = "./Images/Line.bmp";
 
 
-void Lasso::init(SDL_Renderer* renderer)
+void Lasso::init(SDL_Renderer* renderer, float scalar)
 {
 	const char* filename = LINETEXTUREPATH.c_str();
 
@@ -28,6 +28,9 @@ void Lasso::init(SDL_Renderer* renderer)
 	}
 
 	SDL_DestroySurface(imageSf);
+
+	LASSOLENIENCY *= scalar;
+	linewidth *= scalar;
 }
 
 Lasso::~Lasso()

@@ -9,7 +9,7 @@ class Lasso
 public:
 	Lasso() = default;
 	~Lasso();
-	void init(SDL_Renderer* renderer);
+	void init(SDL_Renderer* renderer, float scalar);
 
 	bool isPointInLasso(const glm::vec2 inPoint);
 	bool isClosed();
