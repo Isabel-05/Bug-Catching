@@ -211,7 +211,6 @@ void SDLApp::drawPlaying()
 {
 	SDL_RenderClear(renderer);
 	
-	//draw Background and Bug sprites
 	bgSprite.sprite.render(renderer, bgSprite.rect);
 
 	for (auto& bug : bugs)
@@ -220,8 +219,6 @@ void SDLApp::drawPlaying()
 	}
 
 	lasso.drawLasso(renderer);
-
-	//draw score and timer
 	drawTimerAndScore();
 	
 	SDL_RenderPresent(renderer);

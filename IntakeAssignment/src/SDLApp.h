@@ -3,7 +3,6 @@
 #include "Lasso.h"
 
 constexpr float GAMETIMER = 60.0f;
-
 constexpr int MAX_BUGS = 6;
 
 enum class GameState
@@ -39,7 +38,6 @@ private:
 	void drawFinished();
 	void drawPaused();
 	void drawTimerAndScore();
-	
 
 	//game related functions
 	void updateGameState(float deltaTime);
@@ -47,7 +45,7 @@ private:
 	void populateBugs();
 	void determineCaught();
 
-	//helper function
+	//helper functions
 	bool isPointOnScreen(const glm::vec2 inPoint);
 	void drawText(const std::string& text, float x, float y, float scale);
 

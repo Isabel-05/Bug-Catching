@@ -45,7 +45,7 @@ void Bug::initRandom(SDL_Renderer* renderer)
 {
 	std::uniform_int_distribution<int> genPos(1, WINDOWSIZE); //1 to prevent glm::normalize(0,0)
 	std::uniform_int_distribution<int> genSign(0, 1);
-	std::uniform_int_distribution<int> genType(0, 8);
+	std::uniform_int_distribution<int> genType(0, 9);
 
 	//random spawn position on one of the edges (off screen)
 	glm::vec2 randPos;

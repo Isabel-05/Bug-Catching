@@ -46,8 +46,7 @@ void Lasso::update(float deltaTime)
 	if (!fading) { return; }
 
 	alpha -= FADESPEED * deltaTime;
-	if (alpha < 0.0f)
-	{
+	if (alpha < 0.0f){
 		clearPoints();
 	}
 

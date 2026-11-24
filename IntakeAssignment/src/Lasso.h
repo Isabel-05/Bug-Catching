@@ -17,6 +17,7 @@ public:
 	void drawLasso(SDL_Renderer* renderer);
 	void update(float deltaTime);
 	void addPoint(const SDL_FPoint& point);
+
 	void clearPoints();
 	void setFading();
 
