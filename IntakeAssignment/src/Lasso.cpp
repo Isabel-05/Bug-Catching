@@ -1,33 +1,19 @@
 #include "Lasso.h"
 #include "Util.h"
-#include <string>
 #include <iostream>
 
 float LINEWIDTH = 10.0f;
 float LASSOLENIENCY = 180.0f;
+constexpr float FADESPEED = 4.0f;
 
-const std::string LINETEXTUREPATH = "./Images/Line.bmp";
+const std::string BLUELINETEXTUREPATH = "./Images/Line.bmp";
+const std::string REDLINETEXTUREPATH = "./Images/line_red.bmp";
 
 
 void Lasso::init(SDL_Renderer* renderer, float scalar)
 {
-	const char* filename = LINETEXTUREPATH.c_str();
-
-	SDL_Surface* imageSf = SDL_LoadBMP(filename);
-
-	if (!imageSf)
-	{
-		SDL_Log("Failed to load image: %s (%s)", filename, SDL_GetError());
-		return;
-	}
-
-	lineTexture = SDL_CreateTextureFromSurface(renderer, imageSf);
-
-	if (!lineTexture) {
-		SDL_Log("Failed to create texture from: %s (%s)", filename, SDL_GetError());
-	}
-
-	SDL_DestroySurface(imageSf);
+	blueLineTexture = Util::loadTexture(renderer, BLUELINETEXTUREPATH);
+	redLineTexture = Util::loadTexture(renderer, REDLINETEXTUREPATH);
 
 	LASSOLENIENCY *= scalar;
 	LINEWIDTH *= scalar;
@@ -35,16 +21,40 @@ void Lasso::init(SDL_Renderer* renderer, float scalar)
 
 Lasso::~Lasso()
 {
-	SDL_DestroyTexture(lineTexture);
+	SDL_DestroyTexture(blueLineTexture);
+	SDL_DestroyTexture(redLineTexture);
 }
 
 void Lasso::drawLasso(SDL_Renderer* renderer)
 {
-	if (!lineTexture || vertices.size() == 0) { return; }
+	if (!blueLineTexture || !redLineTexture || vertices.size() == 0) { return; }
 
-	SDL_RenderGeometry(renderer, lineTexture,
-		vertices.data(), static_cast<int>(vertices.size()),
-		indices.data(), static_cast<int>(indices.size()));
+	if (fading) {
+		SDL_RenderGeometry(renderer, redLineTexture,
+			vertices.data(), static_cast<int>(vertices.size()),
+			indices.data(), static_cast<int>(indices.size()));
+	}
+	else {
+		SDL_RenderGeometry(renderer, blueLineTexture,
+			vertices.data(), static_cast<int>(vertices.size()),
+			indices.data(), static_cast<int>(indices.size()));
+	}
+}
+
+void Lasso::update(float deltaTime)
+{
+	if (!fading) { return; }
+
+	alpha -= FADESPEED * deltaTime;
+	if (alpha < 0.0f)
+	{
+		clearPoints();
+	}
+
+	for (SDL_Vertex& v : vertices)
+	{
+		v.color.a = alpha;
+	}
 }
 
 void Lasso::addPoint(const SDL_FPoint& point)
@@ -65,14 +75,16 @@ void Lasso::addPoint(const SDL_FPoint& point)
 	glm::vec2 p2{ point.x, point.y };
 	glm::mat2 rotation{ 0, -1, 1, 0 };
 
+	//get the direction of p1 looking at p2
+	//then rotate it 90 degrees to get the offset to the desired vertex position
 	glm::vec2 direction = p1 - p2;
 	glm::vec2 perpVec = glm::normalize(direction * rotation) * LINEWIDTH;
 	
-	SDL_FColor white = { 1.0f, 1.0f, 1.0f, 1.0f };
+	SDL_FColor white = { 1.0f, 1.0f, 1.0f, alpha };
 
 	if (lassoPoints.size() > 2)
 	{
-		//shift the previous quads UVs back into tiling
+		//shift the previous quads UVs back into the tiling portion of the texture
 		vertices.at(vertices.size() - 1).tex_coord.x = 0.4f;
 		vertices.at(vertices.size() - 2).tex_coord.x = 0.4f;
 		vertices.at(vertices.size() - 3).tex_coord.x = 1.0f;
@@ -115,6 +127,13 @@ void Lasso::clearPoints()
 	lassoPoints.clear();
 	vertices.clear();
 	indices.clear();
+	alpha = 1.0f;
+	fading = false;
+}
+
+void Lasso::setFading()
+{
+	fading = true;
 }
 
 
@@ -178,10 +197,13 @@ bool Lasso::isClosed()
 
 		for (size_t j = len - 1; j > i; j--)
 		{
+			//the way i visualize this algorithm in my head is:
+			//you take the line AB and then look which side of the line C and D are on, if theyre oposite that means that if AB were infinite
+			//they would intersect. But since theyre not, you do the same test just with CD and A & B which guarantees an intersection
 			SDL_FPoint b1 = lassoPoints.at(j);
 			SDL_FPoint b2 = lassoPoints.at(j - 1);
-			bool intersects = (Util::ccw(a1, b1, b2) != Util::ccw(a2, b1, b2)) &&
-				(Util::ccw(a1, a2, b1) != Util::ccw(a1, a2, b2));
+			bool intersects = (Util::ccw(a1, a2, b1) != Util::ccw(a1, a2, b2)) &&
+				(Util::ccw(a1, b1, b2) != Util::ccw(a2, b1, b2));
 
 			if (intersects) {
 				return true; 

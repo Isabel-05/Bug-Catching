@@ -1,6 +1,5 @@
 #pragma once
-#include <SDL3/SDL.h>
-#include <string>
+#include "Util.h"
 #include <memory>
 
 struct Sprite

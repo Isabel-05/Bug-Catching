@@ -7,8 +7,8 @@
 constexpr int WINDOWSIZE = 1080;
 constexpr float SCALEDIFF = WINDOWSIZE / 1080.0f; //used to scale the game for different resolutions
 
-const float SPRITESIZE = 64 * SCALEDIFF; 
-const float SPAWNMARGIN = 40 * SCALEDIFF;
+constexpr float SPRITESIZE = 64 * SCALEDIFF; 
+constexpr float SPAWNMARGIN = 40 * SCALEDIFF;
 
 enum class BugType
 {

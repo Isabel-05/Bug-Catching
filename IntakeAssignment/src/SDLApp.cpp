@@ -124,6 +124,7 @@ void SDLApp::handleInputPlaying()
 
 		if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN){
 			mousePressed = true;
+			lasso.clearPoints();
 		}
 		else if (event.type == SDL_EVENT_MOUSE_BUTTON_UP)
 		{
@@ -132,8 +133,9 @@ void SDLApp::handleInputPlaying()
 			if(lasso.isClosed()){
 				determineCaught();
 			}
-			
-			lasso.clearPoints();
+			else{
+				lasso.setFading();
+			}
 		}
 
 		if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_ESCAPE) {
@@ -207,7 +209,6 @@ void SDLApp::drawStart()
 
 void SDLApp::drawPlaying()
 {
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_RenderClear(renderer);
 	
 	//draw Background and Bug sprites
@@ -228,7 +229,6 @@ void SDLApp::drawPlaying()
 
 void SDLApp::drawFinished()
 {
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_RenderClear(renderer);
 
 	bgSprite.sprite.render(renderer, bgSprite.rect);
@@ -248,15 +248,10 @@ void SDLApp::drawFinished()
 	const float textY = WINDOWSIZE * 0.05 / textScale;
 	const float scoreX = (WINDOWSIZE * 0.5 - (scoreString.size() * charWidth)) / scoreScale;
 	const float scoreY = (WINDOWSIZE * 0.2) / scoreScale;
-	
 
-	SDL_SetRenderScale(renderer, textScale, textScale);
-	SDL_RenderDebugText(renderer, textX, textY, textString.c_str());
+	drawText(textString, textX, textY, textScale);
+	drawText(scoreString, scoreX, scoreY, scoreScale);
 
-	SDL_SetRenderScale(renderer, scoreScale, scoreScale);
-	SDL_RenderDebugText(renderer, scoreX, scoreY, scoreString.c_str());
-
-	SDL_SetRenderScale(renderer, 1.0f, 1.0f);
 	SDL_RenderPresent(renderer);
 }
 
@@ -299,11 +294,8 @@ void SDLApp::drawTimerAndScore()
 	float timerX = (WINDOWSIZE * 0.5 - timerWidth) / scale; 
 	float paddingY = margin / scale;
 
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-	SDL_SetRenderScale(renderer, scale, scale);
-	SDL_RenderDebugText(renderer, scoreX, paddingY, scoreText.c_str());
-	SDL_RenderDebugText(renderer, timerX, paddingY, timerText.c_str());
-	SDL_SetRenderScale(renderer, 1.0f, 1.0f); //reset so sprites aren't affected
+	drawText(scoreText, scoreX, paddingY, scale);
+	drawText(timerText, timerX, paddingY, scale);
 }
 
 // GAME RELATED FUNCTIONS
@@ -317,6 +309,7 @@ void SDLApp::updateGameState(float deltaTime)
 	}
 	populateBugs();
 	updateBugs(deltaTime);
+	lasso.update(deltaTime);
 }
 
 void SDLApp::populateBugs()
@@ -358,6 +351,13 @@ void SDLApp::determineCaught()
 	}
 	//lasso can only give a max of 3 points
 	score += glm::min(count, 3);
+	
+	if (count > 0) {
+		lasso.clearPoints();
+	}
+	else {
+		lasso.setFading();
+	}
 }
 
 bool SDLApp::isPointOnScreen(const glm::vec2 inPoint)
@@ -372,4 +372,12 @@ bool SDLApp::isPointOnScreen(const glm::vec2 inPoint)
 	};
 
 	return Util::isPointInRect(rect, {inPoint.x, inPoint.y});
+}
+
+void SDLApp::drawText(const std::string& text, float x, float y, float scale)
+{
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+	SDL_SetRenderScale(renderer, scale, scale);
+	SDL_RenderDebugText(renderer, x, y, text.c_str());
+	SDL_SetRenderScale(renderer, 1.0f, 1.0f);
 }

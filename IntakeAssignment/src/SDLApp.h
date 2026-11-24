@@ -39,6 +39,7 @@ private:
 	void drawFinished();
 	void drawPaused();
 	void drawTimerAndScore();
+	
 
 	//game related functions
 	void updateGameState(float deltaTime);
@@ -48,6 +49,7 @@ private:
 
 	//helper function
 	bool isPointOnScreen(const glm::vec2 inPoint);
+	void drawText(const std::string& text, float x, float y, float scale);
 
 	//Game State
 	GameState gameState = GameState::START;

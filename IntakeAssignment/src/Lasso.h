@@ -13,10 +13,12 @@ public:
 
 	bool isPointInLasso(const glm::vec2 inPoint);
 	bool isClosed();
-	void drawLasso(SDL_Renderer* renderer);
 
+	void drawLasso(SDL_Renderer* renderer);
+	void update(float deltaTime);
 	void addPoint(const SDL_FPoint& point);
 	void clearPoints();
+	void setFading();
 
 private:
 
@@ -24,6 +26,10 @@ private:
 	std::vector<SDL_Vertex> vertices{};
 	std::vector<int> indices{};
 
-	SDL_Texture* lineTexture = nullptr;
+	SDL_Texture* blueLineTexture = nullptr;
+	SDL_Texture* redLineTexture = nullptr;
+
+	bool fading = false;
+	float alpha = 1.0f;
 };
 

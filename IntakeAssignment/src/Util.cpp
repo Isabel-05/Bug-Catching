@@ -24,4 +24,26 @@ namespace Util
 	{
 		return (c.y - a.y) * (b.x - a.x) > (b.y - a.y) * (c.x - a.x);
 	}
+
+	SDL_Texture* loadTexture(SDL_Renderer* renderer, const std::string& filename)
+	{
+		const char* convFilename = filename.c_str();
+		SDL_Surface* imageSf = SDL_LoadBMP(convFilename);
+
+		if (!imageSf)
+		{
+			SDL_Log("Failed to load image: %s (%s)", convFilename, SDL_GetError());
+			return nullptr;
+		}
+
+		SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, imageSf);
+
+		if (!texture) {
+			SDL_Log("Failed to create texture from: %s (%s)", convFilename, SDL_GetError());
+		}
+
+		SDL_DestroySurface(imageSf);
+
+		return texture;
+	}
 }

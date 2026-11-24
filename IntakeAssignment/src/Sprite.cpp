@@ -30,21 +30,7 @@ Sprite& Sprite::operator=(Sprite&& other) noexcept
 
 void Sprite::init(SDL_Renderer* renderer, const std::string& filename)
 {
-	SDL_Surface* imageSf = SDL_LoadBMP(filename.c_str());
-
-	if (!imageSf)
-	{
-		SDL_Log("Failed to load image: %s (%s)", filename.c_str(), SDL_GetError());
-		return;
-	}
-
-	texture = SDL_CreateTextureFromSurface(renderer, imageSf);
-
-	if (!texture) {
-		SDL_Log("Failed to create texture from: %s (%s)", filename.c_str(), SDL_GetError());
-	}
-
-	SDL_DestroySurface(imageSf);
+	texture = Util::loadTexture(renderer, filename);
 }
 
 void Sprite::render(SDL_Renderer* renderer, const SDL_FRect& inRect)
