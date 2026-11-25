@@ -5,6 +5,7 @@ namespace
 	float LINEWIDTH = 10.0f;
 	float LASSOLENIENCY = 180.0f;
 	constexpr float FADESPEED = 4.0f;
+	constexpr float CONFIRMTIMER = 0.15f;
 
 	const std::string BLUELINETEXTUREPATH = "./Images/Line.bmp";
 	const std::string REDLINETEXTUREPATH = "./Images/line_red.bmp";
@@ -30,7 +31,7 @@ void Lasso::drawLasso(SDL_Renderer* renderer)
 			vertices.data(), static_cast<int>(vertices.size()),
 			indices.data(), static_cast<int>(indices.size()));
 	}
-	else if(expanding){
+	else if(confirmed){
 		SDL_RenderGeometry(renderer, greenLine.texture,
 			vertices.data(), static_cast<int>(vertices.size()),
 			indices.data(), static_cast<int>(indices.size()));
@@ -56,21 +57,11 @@ void Lasso::update(float deltaTime)
 			v.color.a = alpha;
 		}
 	}
-	else if (expanding)
+	if (confirmed)
 	{
-		uvScale += deltaTime * FADESPEED;
-		if (uvScale > 0.5f) {
+		confirmTimer -= deltaTime;
+		if (confirmTimer < 0.0f) {
 			clearPoints();
-			return;
-		}
-		for (SDL_Vertex& v : vertices)
-		{
-			if (v.tex_coord.y < 0.5f) {
-				v.tex_coord.y += deltaTime;
-			}
-			else {
-				v.tex_coord.y -= deltaTime;
-			}
 		}
 	}
 }
@@ -146,9 +137,9 @@ void Lasso::clearPoints()
 	vertices.clear();
 	indices.clear();
 	alpha = 1.0f;
-	uvScale = 0.0f;
+	confirmTimer = 0.0f;
 	fading = false;
-	expanding = false;
+	confirmed = false;
 }
 
 void Lasso::startFade()
@@ -156,9 +147,10 @@ void Lasso::startFade()
 	fading = true;
 }
 
-void Lasso::startPop()
+void Lasso::startConfirm()
 {
-	expanding = true;
+	confirmed = true;
+	confirmTimer = CONFIRMTIMER;
 }
 
 

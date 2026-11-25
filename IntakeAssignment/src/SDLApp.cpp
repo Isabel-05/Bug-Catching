@@ -350,7 +350,7 @@ void SDLApp::determineCaught()
 	score += balancedPoints;
 	
 	if (balancedPoints > 0) {
-		lasso.startPop();
+		lasso.startConfirm();
 		effectPos = lasso.getCenter();
 		effectCount = balancedPoints;
 		effectTimer = EFFECTTIMER;

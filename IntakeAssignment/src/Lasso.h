@@ -28,7 +28,7 @@ public:
 	glm::vec2 getCenter();
 	void clearPoints();
 	void startFade();
-	void startPop();
+	void startConfirm();
 
 private:
 
@@ -43,7 +43,7 @@ private:
 	bool fading = false;
 	float alpha = 1.0f;
 
-	bool expanding = false;
-	float uvScale = 0.0f;
+	bool confirmed = false;
+	float confirmTimer = 0.2f;
 };
 
