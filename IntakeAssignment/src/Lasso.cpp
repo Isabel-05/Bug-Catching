@@ -8,34 +8,35 @@ constexpr float FADESPEED = 4.0f;
 
 const std::string BLUELINETEXTUREPATH = "./Images/Line.bmp";
 const std::string REDLINETEXTUREPATH = "./Images/line_red.bmp";
+const std::string GREENLINETEXTUREPATH = "./Images/line_green.bmp";
 
 
 void Lasso::init(SDL_Renderer* renderer, float scalar)
 {
-	blueLineTexture = Util::loadTexture(renderer, BLUELINETEXTUREPATH);
-	redLineTexture = Util::loadTexture(renderer, REDLINETEXTUREPATH);
+	blueLine.init(renderer, BLUELINETEXTUREPATH);
+	redLine.init(renderer, REDLINETEXTUREPATH);
+	greenLine.init(renderer, GREENLINETEXTUREPATH);
 
 	LASSOLENIENCY *= scalar;
 	LINEWIDTH *= scalar;
 }
 
-Lasso::~Lasso()
-{
-	SDL_DestroyTexture(blueLineTexture);
-	SDL_DestroyTexture(redLineTexture);
-}
-
 void Lasso::drawLasso(SDL_Renderer* renderer)
 {
-	if (!blueLineTexture || !redLineTexture || vertices.size() == 0) { return; }
+	if (!blueLine.texture || !redLine.texture || vertices.size() == 0) { return; }
 
 	if (fading) {
-		SDL_RenderGeometry(renderer, redLineTexture,
+		SDL_RenderGeometry(renderer, redLine.texture,
+			vertices.data(), static_cast<int>(vertices.size()),
+			indices.data(), static_cast<int>(indices.size()));
+	}
+	else if(expanding){
+		SDL_RenderGeometry(renderer, greenLine.texture,
 			vertices.data(), static_cast<int>(vertices.size()),
 			indices.data(), static_cast<int>(indices.size()));
 	}
 	else {
-		SDL_RenderGeometry(renderer, blueLineTexture,
+		SDL_RenderGeometry(renderer, blueLine.texture,
 			vertices.data(), static_cast<int>(vertices.size()),
 			indices.data(), static_cast<int>(indices.size()));
 	}
@@ -43,16 +44,34 @@ void Lasso::drawLasso(SDL_Renderer* renderer)
 
 void Lasso::update(float deltaTime)
 {
-	if (!fading) { return; }
-
-	alpha -= FADESPEED * deltaTime;
-	if (alpha < 0.0f){
-		clearPoints();
-	}
-
-	for (SDL_Vertex& v : vertices)
+	if (fading)
 	{
-		v.color.a = alpha;
+		alpha -= FADESPEED * deltaTime;
+		if (alpha < 0.0f) {
+			clearPoints();
+		}
+
+		for (SDL_Vertex& v : vertices)
+		{
+			v.color.a = alpha;
+		}
+	}
+	else if (expanding)
+	{
+		uvScale += deltaTime * FADESPEED;
+		if (uvScale > 0.5f) {
+			clearPoints();
+			return;
+		}
+		for (SDL_Vertex& v : vertices)
+		{
+			if (v.tex_coord.y < 0.5f) {
+				v.tex_coord.y += deltaTime;
+			}
+			else {
+				v.tex_coord.y -= deltaTime;
+			}
+		}
 	}
 }
 
@@ -127,12 +146,19 @@ void Lasso::clearPoints()
 	vertices.clear();
 	indices.clear();
 	alpha = 1.0f;
+	uvScale = 0.0f;
 	fading = false;
+	expanding = false;
 }
 
-void Lasso::setFading()
+void Lasso::startFade()
 {
 	fading = true;
+}
+
+void Lasso::startPop()
+{
+	expanding = true;
 }
 
 
@@ -211,4 +237,18 @@ bool Lasso::isClosed()
 	}
 
 	return false;
+}
+
+glm::vec2 Lasso::getCenter()
+{
+	if (lassoPoints.empty()) { return glm::vec2(0.0f); }
+
+	glm::vec2 sum{ 0.0f, 0.0f };
+	for (const SDL_FPoint& p : lassoPoints)
+	{
+		sum.x += p.x;
+		sum.y += p.y;
+	}
+
+	return sum / static_cast<float>(lassoPoints.size());
 }

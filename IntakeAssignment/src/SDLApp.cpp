@@ -88,16 +88,13 @@ void SDLApp::handleInputStart()
 		if (event.type == SDL_EVENT_QUIT) { wantQuit = true; }
 
 		if (event.type == SDL_EVENT_MOUSE_BUTTON_UP) {
-
-			float x = event.button.x;
-			float y = event.button.y;
-
+			SDL_FPoint click{ event.button.x, event.button.y };
 			//start button clicked
-			if (Util::isPointInRect(startSprite.rect, {x, y})) {
+			if (Util::isPointInRect(startSprite.rect, click)) {
 				gameState = GameState::PLAYING;
 			}
 			//exit button clicked
-			else if (Util::isPointInRect(exitSprite.rect, {x, y})) {
+			else if (Util::isPointInRect(exitSprite.rect, click)) {
 				wantQuit = true;
 			}
 		}
@@ -115,9 +112,7 @@ void SDLApp::handleInputPlaying()
 		{
 			if (mousePressed)
 			{
-				SDL_FPoint point;
-				point.x = event.motion.x;
-				point.y = event.motion.y;
+				SDL_FPoint point{ event.button.x, event.button.y };
 				lasso.addPoint(point);
 			}
 		}
@@ -134,7 +129,7 @@ void SDLApp::handleInputPlaying()
 				determineCaught();
 			}
 			else{
-				lasso.setFading();
+				lasso.startFade();
 			}
 		}
 
@@ -153,11 +148,9 @@ void SDLApp::handleInputFinished()
 		if (event.type == SDL_EVENT_QUIT) { wantQuit = true; }
 
 		if (event.type == SDL_EVENT_MOUSE_BUTTON_UP) {
+			SDL_FPoint click{ event.button.x, event.button.y };
 
-			float x = event.button.x;
-			float y = event.button.y;
-
-			if (Util::isPointInRect(retrySprite.rect, {x, y})) {
+			if (Util::isPointInRect(retrySprite.rect, click)) {
 				timer = GAMETIMER;
 				score = 0;
 				bugs.clear();
@@ -165,7 +158,7 @@ void SDLApp::handleInputFinished()
 				mousePressed = false;
 				gameState = GameState::PLAYING;
 			}
-			else if (Util::isPointInRect(exitSprite.rect, {x, y})) {
+			else if (Util::isPointInRect(exitSprite.rect, click)) {
 				wantQuit = true;
 			}
 		}
@@ -178,15 +171,13 @@ void SDLApp::handleInputPaused()
 	{
 		if (event.type == SDL_EVENT_QUIT) { wantQuit = true; }
 
-		if (event.type == SDL_EVENT_MOUSE_BUTTON_UP) {
+		if (event.type == SDL_EVENT_MOUSE_BUTTON_UP) {	
+			SDL_FPoint click{ event.button.x, event.button.y };
 
-			float x = event.button.x;
-			float y = event.button.y;
-
-			if (Util::isPointInRect(retrySprite.rect, { x, y })) {
+			if (Util::isPointInRect(continueSprite.rect, click)) {
 				gameState = GameState::PLAYING;
 			}
-			else if (Util::isPointInRect(exitSprite.rect, { x, y })) {
+			else if (Util::isPointInRect(exitSprite.rect, click)) {
 				wantQuit = true;
 			}
 		}
@@ -220,6 +211,13 @@ void SDLApp::drawPlaying()
 
 	lasso.drawLasso(renderer);
 	drawTimerAndScore();
+
+	if (effectTimer > 0.0f)
+	{
+		std::string text = "+" + std::to_string(effectCount);
+		float scale = WINDOWSIZE * 0.0035;
+		drawText(text, effectPos.x / scale, effectPos.y / scale, scale);
+	}
 	
 	SDL_RenderPresent(renderer);
 }
@@ -300,10 +298,13 @@ void SDLApp::drawTimerAndScore()
 void SDLApp::updateGameState(float deltaTime)
 {
 	timer -= deltaTime;
-	if (timer < 0.0f)
-	{
+	if (timer < 0.0f){
 		gameState = GameState::FINISHED;
 	}
+	if (effectTimer > 0.0f) {
+		effectTimer -= deltaTime;
+	}
+
 	populateBugs();
 	updateBugs(deltaTime);
 	lasso.update(deltaTime);
@@ -322,6 +323,7 @@ void SDLApp::updateBugs(float deltaTime)
 {
 	for (int i = 0; i < static_cast<int>(bugs.size()); i++)
 	{
+		//despawn if they leave the screen
 		if (!isPointOnScreen(bugs.at(i).position))
 		{
 			bugs.erase(bugs.begin() + i);
@@ -335,7 +337,6 @@ void SDLApp::updateBugs(float deltaTime)
 void SDLApp::determineCaught()
 {
 	int count = 0;
-
 	for (int i = 0; i < static_cast<int>(bugs.size()); i++)
 	{
 		if (lasso.isPointInLasso(bugs.at(i).position))
@@ -347,13 +348,17 @@ void SDLApp::determineCaught()
 		}
 	}
 	//lasso can only give a max of 3 points
-	score += glm::min(count, 3);
+	int balancedPoints = glm::min(count, 3);
+	score += balancedPoints;
 	
-	if (count > 0) {
-		lasso.clearPoints();
+	if (balancedPoints > 0) {
+		lasso.startPop();
+		effectPos = lasso.getCenter();
+		effectCount = balancedPoints;
+		effectTimer = EFFECTTIMER;
 	}
 	else {
-		lasso.setFading();
+		lasso.startFade();
 	}
 }
 
@@ -367,7 +372,6 @@ bool SDLApp::isPointOnScreen(const glm::vec2 inPoint)
 		WINDOWSIZE + (despawnMargin * 2),
 		WINDOWSIZE + (despawnMargin * 2)
 	};
-
 	return Util::isPointInRect(rect, {inPoint.x, inPoint.y});
 }
 

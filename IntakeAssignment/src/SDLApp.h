@@ -4,6 +4,7 @@
 
 constexpr float GAMETIMER = 60.0f;
 constexpr int MAX_BUGS = 6;
+constexpr float EFFECTTIMER = 0.2f;
 
 enum class GameState
 {
@@ -54,6 +55,7 @@ private:
 	std::vector<Bug> bugs{};
 	float timer = GAMETIMER;
 	uint32_t score = 0;
+	bool mousePressed = false;
 	Lasso lasso;
 
 	//SDL Stuff
@@ -61,14 +63,16 @@ private:
 	SDL_Renderer* renderer = nullptr;
 	SDL_Event event{};
 
-	//input tracking
-	bool mousePressed = false;
-
 	//Background / Menu Sprites
 	StaticSprite bgSprite;
 	StaticSprite startSprite;
 	StaticSprite retrySprite;
 	StaticSprite exitSprite;
 	StaticSprite continueSprite;
+
+	//+points effect
+	int effectCount = 0;
+	float effectTimer = 0.0f;
+	glm::vec2 effectPos{ 0, 0 };
 };
 

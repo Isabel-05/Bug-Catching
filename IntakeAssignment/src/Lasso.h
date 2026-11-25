@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <SDL3/SDL.h>
+#include "Sprite.h"
 #include "glm/glm.hpp"
 
 
@@ -8,18 +9,24 @@ class Lasso
 {
 public:
 	Lasso() = default;
-	~Lasso();
-	void init(SDL_Renderer* renderer, float scalar);
+	~Lasso() = default;
+	Lasso(const Lasso&) = delete;
+	Lasso& operator=(const Lasso&) = delete;
+	Lasso(Lasso&&) = default;
+	Lasso& operator=(Lasso&&) = default;
 
-	bool isPointInLasso(const glm::vec2 inPoint);
-	bool isClosed();
+	void init(SDL_Renderer* renderer, float scalar);
 
 	void drawLasso(SDL_Renderer* renderer);
 	void update(float deltaTime);
 	void addPoint(const SDL_FPoint& point);
 
+	bool isPointInLasso(const glm::vec2 inPoint);
+	bool isClosed();
+	glm::vec2 getCenter();
 	void clearPoints();
-	void setFading();
+	void startFade();
+	void startPop();
 
 private:
 
@@ -27,10 +34,14 @@ private:
 	std::vector<SDL_Vertex> vertices{};
 	std::vector<int> indices{};
 
-	SDL_Texture* blueLineTexture = nullptr;
-	SDL_Texture* redLineTexture = nullptr;
+	Sprite blueLine;
+	Sprite redLine;
+	Sprite greenLine;
 
 	bool fading = false;
 	float alpha = 1.0f;
+
+	bool expanding = false;
+	float uvScale = 0.0f;
 };
 
