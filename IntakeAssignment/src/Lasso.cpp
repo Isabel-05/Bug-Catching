@@ -1,15 +1,15 @@
 #include "Lasso.h"
-#include "Util.h"
-#include <iostream>
 
-float LINEWIDTH = 10.0f;
-float LASSOLENIENCY = 180.0f;
-constexpr float FADESPEED = 4.0f;
+namespace 
+{
+	float LINEWIDTH = 10.0f;
+	float LASSOLENIENCY = 180.0f;
+	constexpr float FADESPEED = 4.0f;
 
-const std::string BLUELINETEXTUREPATH = "./Images/Line.bmp";
-const std::string REDLINETEXTUREPATH = "./Images/line_red.bmp";
-const std::string GREENLINETEXTUREPATH = "./Images/line_green.bmp";
-
+	const std::string BLUELINETEXTUREPATH = "./Images/Line.bmp";
+	const std::string REDLINETEXTUREPATH = "./Images/line_red.bmp";
+	const std::string GREENLINETEXTUREPATH = "./Images/line_green.bmp";
+}
 
 void Lasso::init(SDL_Renderer* renderer, float scalar)
 {
@@ -87,18 +87,18 @@ void Lasso::addPoint(const SDL_FPoint& point)
 	if(Util::pointsWithinRadius(point, lassoPoints.back(), 10.0f)) { return; }
 
 	//build the quad (vertices and indices)
-	int vertexCount = static_cast<int>(vertices.size());
+	const int vertexCount = static_cast<int>(vertices.size());
 
-	glm::vec2 p1{ lassoPoints.back().x, lassoPoints.back().y };
-	glm::vec2 p2{ point.x, point.y };
-	glm::mat2 rotation{ 0, -1, 1, 0 };
+	const glm::vec2 p1{ lassoPoints.back().x, lassoPoints.back().y };
+	const glm::vec2 p2{ point.x, point.y };
+	const glm::mat2 rotation{ 0, -1, 1, 0 };
 
 	//get the direction of p1 looking at p2
 	//then rotate it 90 degrees to get the offset to the desired vertex position
-	glm::vec2 direction = p1 - p2;
-	glm::vec2 perpVec = glm::normalize(direction * rotation) * LINEWIDTH;
+	const glm::vec2 direction = p1 - p2;
+	const glm::vec2 perpVec = glm::normalize(direction * rotation) * LINEWIDTH;
 	
-	SDL_FColor white = { 1.0f, 1.0f, 1.0f, alpha };
+	const SDL_FColor white = { 1.0f, 1.0f, 1.0f, alpha };
 
 	if (lassoPoints.size() > 2)
 	{
@@ -167,7 +167,7 @@ bool Lasso::isPointInLasso(const glm::vec2 inPoint)
 	//This is my own implementation of the Point-in-Poly algorithm by WR Franklin
 	//Source: https://wrfranklin.org/Research/Short_Notes/pnpoly.html
 
-	size_t pointCount = lassoPoints.size();
+	const size_t pointCount = lassoPoints.size();
 
 	if (pointCount < 3) { return false; }
 
@@ -211,7 +211,7 @@ bool Lasso::isClosed()
 	//if the to points don't, the line might have crossed itself which also counts as closed
 	//algorithm source: https://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/ 
 
-	size_t len = lassoPoints.size();
+	const size_t len = lassoPoints.size();
 
 	//pincer style loop since the intersection usually happens near the far ends
 	//a small optimization for this brute force, but the amount of sample points is denoised so it shouldnt be too bad

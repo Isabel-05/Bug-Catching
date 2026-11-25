@@ -46,4 +46,12 @@ namespace Util
 
 		return texture;
 	}
+
+	void drawText(SDL_Renderer* renderer, const std::string& text, float x, float y, float scale)
+	{
+		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+		SDL_SetRenderScale(renderer, scale, scale);
+		SDL_RenderDebugText(renderer, x, y, text.c_str());
+		SDL_SetRenderScale(renderer, 1.0f, 1.0f);
+	}
 }

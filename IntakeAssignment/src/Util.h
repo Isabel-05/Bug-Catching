@@ -9,4 +9,5 @@ namespace Util
 	bool ccw(const SDL_FPoint& a, const SDL_FPoint& b, const SDL_FPoint& c);
 
 	SDL_Texture* loadTexture(SDL_Renderer* renderer, const std::string& filename);
+	void drawText(SDL_Renderer* renderer, const std::string& text, float x, float y, float scale);
 }

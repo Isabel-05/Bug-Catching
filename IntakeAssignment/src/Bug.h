@@ -17,8 +17,10 @@ enum class BugType
 	BUTTERFLY = 2
 };
 
-struct Bug
+class Bug
 {
+public:
+
 	Bug() = default;
 	~Bug() = default;
 
@@ -28,7 +30,6 @@ struct Bug
 	//default so it uses the sprite class's move operators
 	Bug(Bug&&) = default;
 	Bug& operator=(Bug&&) = default;
-
 
 	void init(SDL_Renderer* renderer, BugType inType, glm::vec2 inPosition, glm::vec2 inForward);
 	void initRandom(SDL_Renderer* renderer);

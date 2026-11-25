@@ -2,12 +2,15 @@
 #include <random>
 #include <cmath>
 
-const std::string LADYBUGPATH = "./Images/ladybug-rotated.bmp";
-const std::string MOTHPATH = "./Images/moth.bmp";
-const std::string BUTTERFLYPATH = "./Images/butterfly.bmp";
+namespace 
+{
+	const std::string LADYBUGPATH = "./Images/ladybug-rotated.bmp";
+	const std::string MOTHPATH = "./Images/moth.bmp";
+	const std::string BUTTERFLYPATH = "./Images/butterfly.bmp";
 
-std::random_device randomDevice;
-std::mt19937 generator(randomDevice());
+	std::random_device randomDevice;
+	std::mt19937 generator(randomDevice());
+}
 
 void Bug::init(SDL_Renderer* renderer, BugType inType, glm::vec2 inPosition, glm::vec2 inForward)
 {
@@ -50,12 +53,12 @@ void Bug::initRandom(SDL_Renderer* renderer)
 	//random spawn position on one of the edges (off screen)
 	glm::vec2 randPos;
 
-	int edge_axis = genSign(generator); //determines if its one of the horizontal or vertical edges
-	int edge_offset = genSign(generator); //determines wether it spawns at the near edge (0) or the far edge (windowsize)
-	int bug_pos = genPos(generator); //determines where along that edge it spawns
+	const int edge_axis = genSign(generator); //determines if its one of the horizontal or vertical edges
+	const int edge_offset = genSign(generator); //determines wether it spawns at the near edge (0) or the far edge (windowsize)
+	const int bug_pos = genPos(generator); //determines where along that edge it spawns
 
-	int offset = edge_offset * WINDOWSIZE;
-	int sign = edge_offset == 1 ? 1 : -1;
+	const int offset = edge_offset * WINDOWSIZE;
+	const int sign = edge_offset == 1 ? 1 : -1;
 
 	if (edge_axis == 0)
 	{

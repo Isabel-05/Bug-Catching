@@ -1,8 +1,9 @@
 #pragma once
+#include "Sprite.h"
 #include <vector>
 #include <SDL3/SDL.h>
-#include "Sprite.h"
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
+#include <glm/vec2.hpp>
 
 
 class Lasso
@@ -23,6 +24,7 @@ public:
 
 	bool isPointInLasso(const glm::vec2 inPoint);
 	bool isClosed();
+
 	glm::vec2 getCenter();
 	void clearPoints();
 	void startFade();

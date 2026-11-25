@@ -28,9 +28,9 @@ SDLApp::SDLApp()
 	bgSprite.rect = { 0, 0, WINDOWSIZE, WINDOWSIZE };
 	bgSprite.sprite.init(renderer, "./Images/Grass.bmp");
 
-	float midScreen = WINDOWSIZE * 0.5;
-	float quarterScreen = WINDOWSIZE * 0.25;
-	float threeEighths = WINDOWSIZE * 0.375;
+	const float midScreen = WINDOWSIZE * 0.5;
+	const float quarterScreen = WINDOWSIZE * 0.25;
+	const float threeEighths = WINDOWSIZE * 0.375;
 
 	SDL_FRect middleRect{ quarterScreen, threeEighths, midScreen, quarterScreen };
 
@@ -212,11 +212,9 @@ void SDLApp::drawPlaying()
 	lasso.drawLasso(renderer);
 	drawTimerAndScore();
 
-	if (effectTimer > 0.0f)
-	{
+	if (effectTimer > 0.0f){
 		std::string text = "+" + std::to_string(effectCount);
-		float scale = WINDOWSIZE * 0.0035;
-		drawText(text, effectPos.x / scale, effectPos.y / scale, scale);
+		Util::drawText(renderer, text, effectPos.x / EFFECTSCALE, effectPos.y / EFFECTSCALE, EFFECTSCALE);
 	}
 	
 	SDL_RenderPresent(renderer);
@@ -232,8 +230,8 @@ void SDLApp::drawFinished()
 
 	//There's a lot of magic numbers here for the text positioning i got through trial and error
 	//i apologize for the ugliness
-	std::string textString = "Your Score:";
-	std::string scoreString = std::to_string(score);
+	const std::string textString = "Your Score:";
+	const std::string scoreString = std::to_string(score);
 
 	const float textScale = WINDOWSIZE * 0.011;
 	const float scoreScale = WINDOWSIZE * 0.014;
@@ -244,8 +242,8 @@ void SDLApp::drawFinished()
 	const float scoreX = (WINDOWSIZE * 0.5 - (scoreString.size() * charWidth)) / scoreScale;
 	const float scoreY = (WINDOWSIZE * 0.2) / scoreScale;
 
-	drawText(textString, textX, textY, textScale);
-	drawText(scoreString, scoreX, scoreY, scoreScale);
+	Util::drawText(renderer, textString, textX, textY, textScale);
+	Util::drawText(renderer, scoreString, scoreX, scoreY, scoreScale);
 
 	SDL_RenderPresent(renderer);
 }
@@ -266,14 +264,14 @@ void SDLApp::drawPaused()
 
 void SDLApp::drawTimerAndScore()
 {
-	std::string scoreText = "Score: " + std::to_string(score);
+	const std::string scoreText = "Score: " + std::to_string(score);
 
 	//convert float timer into minute/seconds
-	int totalSeconds = static_cast<int>(timer);
-	int minute  = static_cast<int>(totalSeconds / 60);
-	int secondsTens = static_cast<int>((totalSeconds % 60) / 10);
-	int secondsOnes = totalSeconds % 10;
-	std::string timerText = std::to_string(minute) + ":" + std::to_string(secondsTens) + std::to_string(secondsOnes);
+	const int totalSeconds = static_cast<int>(timer);
+	const int minute  = static_cast<int>(totalSeconds / 60);
+	const int secondsTens = static_cast<int>((totalSeconds % 60) / 10);
+	const int secondsOnes = totalSeconds % 10;
+	const std::string timerText = std::to_string(minute) + ":" + std::to_string(secondsTens) + std::to_string(secondsOnes);
 	//i split up the two digits so it renders single seconds as "1:04" instead of "1:4" (for example)
 
 	const float scale = WINDOWSIZE * 0.005;
@@ -289,8 +287,8 @@ void SDLApp::drawTimerAndScore()
 	float timerX = (WINDOWSIZE * 0.5 - timerWidth) / scale; 
 	float paddingY = margin / scale;
 
-	drawText(scoreText, scoreX, paddingY, scale);
-	drawText(timerText, timerX, paddingY, scale);
+	Util::drawText(renderer, scoreText, scoreX, paddingY, scale);
+	Util::drawText(renderer, timerText, timerX, paddingY, scale);
 }
 
 // GAME RELATED FUNCTIONS
@@ -348,7 +346,7 @@ void SDLApp::determineCaught()
 		}
 	}
 	//lasso can only give a max of 3 points
-	int balancedPoints = glm::min(count, 3);
+	const int balancedPoints = glm::min(count, 3);
 	score += balancedPoints;
 	
 	if (balancedPoints > 0) {
@@ -364,7 +362,7 @@ void SDLApp::determineCaught()
 
 bool SDLApp::isPointOnScreen(const glm::vec2 inPoint)
 {
-	float despawnMargin = SPAWNMARGIN + 1;
+	const float despawnMargin = SPAWNMARGIN + 1;
 	
 	SDL_FRect rect{
 		-despawnMargin,
@@ -373,12 +371,4 @@ bool SDLApp::isPointOnScreen(const glm::vec2 inPoint)
 		WINDOWSIZE + (despawnMargin * 2)
 	};
 	return Util::isPointInRect(rect, {inPoint.x, inPoint.y});
-}
-
-void SDLApp::drawText(const std::string& text, float x, float y, float scale)
-{
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-	SDL_SetRenderScale(renderer, scale, scale);
-	SDL_RenderDebugText(renderer, x, y, text.c_str());
-	SDL_SetRenderScale(renderer, 1.0f, 1.0f);
 }

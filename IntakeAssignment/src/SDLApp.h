@@ -5,6 +5,7 @@
 constexpr float GAMETIMER = 60.0f;
 constexpr int MAX_BUGS = 6;
 constexpr float EFFECTTIMER = 0.2f;
+constexpr float EFFECTSCALE = WINDOWSIZE * 0.0035;
 
 enum class GameState
 {
@@ -44,11 +45,8 @@ private:
 	void updateGameState(float deltaTime);
 	void updateBugs(float deltaTime);
 	void populateBugs();
-	void determineCaught();
-
-	//helper functions
 	bool isPointOnScreen(const glm::vec2 inPoint);
-	void drawText(const std::string& text, float x, float y, float scale);
+	void determineCaught();
 
 	//Game State
 	GameState gameState = GameState::START;
@@ -75,4 +73,3 @@ private:
 	float effectTimer = 0.0f;
 	glm::vec2 effectPos{ 0, 0 };
 };
-
