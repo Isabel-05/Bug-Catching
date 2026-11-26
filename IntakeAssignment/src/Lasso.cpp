@@ -24,7 +24,7 @@ void Lasso::init(SDL_Renderer* renderer, float scalar)
 
 void Lasso::drawLasso(SDL_Renderer* renderer)
 {
-	if (!blueLine.texture || !redLine.texture || vertices.size() == 0) { return; }
+	if (!blueLine.texture || !redLine.texture || !greenLine.texture || vertices.size() == 0) { return; }
 
 	if (fading) {
 		SDL_RenderGeometry(renderer, redLine.texture,
