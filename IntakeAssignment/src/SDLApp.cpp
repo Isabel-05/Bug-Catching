@@ -345,14 +345,13 @@ void SDLApp::determineCaught()
 			i--;
 		}
 	}
-	//lasso can only give a max of 3 points
-	const int balancedPoints = glm::min(count, 3);
-	score += balancedPoints;
+
+	score += count;
 	
-	if (balancedPoints > 0) {
+	if (count > 0) {
 		lasso.startConfirm();
 		effectPos = lasso.getCenter();
-		effectCount = balancedPoints;
+		effectCount = count;
 		effectTimer = EFFECTTIMER;
 	}
 	else {

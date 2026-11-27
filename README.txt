@@ -9,23 +9,15 @@ By holding down the left mouse button and moving the mouse you can draw a lasso 
 If a bug is detected inside of the lasso, it will be despawned and you will gain points which you can track with the score counter at the top right of the screen.
 No keyboard inputs are needed.
 
-There are three different types of bugs:
-- Ladybug
-- Moth
-- Butterfly
+There are three different types of bugs that give different amounts of points:
+- Ladybug = 1
+- Moth = 2
+- Butterfly = 3
 
 Each one has a different movement pattern.
 The Ladybug is slower and only changes its course rarely.
 The Butterfly is very fast and switches around a lot.
 The moth is somewhere in between.
-
-Because of that they also have different spawn rates and give different amounts of points.
-- Ladybug = 1 point
-- Moth = 2 points
-- Butterfly = 3 points
-
-But drawing full-screen lassos isn't optimal. A lasso can only award a maximum of 3 points.
-That means it's better to draw small circles with intent around high value bugs.
 
 Try to get as many points as possible within the 60 seconds!
 Your final score will be shown at the end and you can try again by clicking "Retry" 
